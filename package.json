@@ -11,10 +11,10 @@
   "dependencies": {
     "d3": "7.9.0",
     "google-auth-library": "9.15.1",
-    "next": "15.5.4",
+    "next": "15.5.29",
     "pg": "8.13.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "19.1.10",
+    "react-dom": "19.1.10"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
