@@ -210,7 +210,7 @@ SOP.note = (el, t) => { const p = document.createElement('p'); p.className = 'so
 SOP.tip = (el) => { const tip = document.createElement('div'); tip.className = 'sop-tip'; tip.hidden = true; el.append(tip); return (ev, text) => { if (ev == null) { tip.hidden = true; return; } tip.textContent = text; tip.hidden = false; const bx = el.getBoundingClientRect(), tw = tip.offsetWidth; tip.style.left = Math.min(Math.max(0, ev.clientX - bx.left - tw / 2), bx.width - tw) + 'px'; tip.style.top = Math.max(0, ev.clientY - bx.top - 40) + 'px'; }; };
 SOP.both = () => { const a = dash.data('k_ev'), b = dash.data('k_gc'); const st = a.status !== 'ok' ? a.status : b.status; return { status: st, rows: st === 'ok' ? a.data.concat(b.data) : [] }; };
 
-/* barra de atingimento: 0 a 120%+, marco nos 100% */
+/* barra de atingimento: receita proporcional à meta (escala até o maior dos dois), marco nos 100% */
 dash.draw('meter', (el) => {
   const d = dash.data(el.getAttribute('data-source'));
   el.replaceChildren();
@@ -218,11 +218,10 @@ dash.draw('meter', (el) => {
   const row = SOP.match(d.data, el.getAttribute('data-where'))[0];
   const v = row ? row[el.getAttribute('data-field')] : null;
   if (v == null) { SOP.note(el, 'Atingimento: sem dado (sem meta no período).'); return; }
-  const W = Math.max(240, el.clientWidth || 400), H = 40, top = Math.max(1.2, v * 1.05);
+  const W = Math.max(240, el.clientWidth || 400), H = 40, top = Math.max(1, v);
   const x = d3.scaleLinear().domain([0, top]).range([0, W - 80]);
   const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Atingimento ' + SOP.F(v, 'pct'));
-  svg.append('rect').attr('x', 0).attr('y', 8).attr('width', x(top)).attr('height', 14).attr('rx', 7).style('fill', 'var(--cds-chart-grid, var(--color-border-line))');
-  svg.append('rect').attr('x', 0).attr('y', 8).attr('width', Math.max(4, x(Math.max(0, v)))).attr('height', 14).attr('rx', 7).style('fill', v >= 1 ? 'var(--color-ok)' : v >= 0.9 ? 'var(--color-warn)' : 'var(--brand)');
+  svg.append('rect').attr('x', 0).attr('y', 7).attr('width', Math.max(2, x(Math.max(0, v)))).attr('height', 16).attr('rx', 3).style('fill', 'var(--brand)');
   svg.append('line').attr('x1', x(1)).attr('x2', x(1)).attr('y1', 3).attr('y2', 27).style('stroke', 'var(--color-fg)').style('stroke-width', 2);
   svg.append('text').attr('x', x(1)).attr('y', 38).attr('text-anchor', 'middle').text('meta');
   svg.append('text').attr('x', W - 72).attr('y', 20).style('font-size', '15px').style('font-weight', 600).style('fill', 'var(--color-fg)').text(SOP.F(v, 'pct'));
