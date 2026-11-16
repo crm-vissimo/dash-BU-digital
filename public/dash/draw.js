@@ -2,7 +2,7 @@
 (function () {
 /* Período, botões, formatos e desenhos do Super One Page. */
 const SOP = (window.SOP = window.SOP || {});
-SOP.IDS = ['ev_kpi', 'ev_tv', 'ev_yoy', 'ev_tv_yoy', 'ev_ped', 'ev_serie', 'ev_sku', 'ev_kit', 'canais_real', 'canais_plan', 'canais_gc_real', 'canais_gc_plan', 'plano_cat', 'planos_dir', 'base_status', 'itev_kpi', 'itev_yoy', 'itev_sku', 'itev_kit', 'itev_ped', 'itev_serie', 'cl_serie', 'gc_kpi', 'gc_yoy', 'gce', 'gce_sku', 'gce_kit', 'cl_ped', 'cl_ord', 'm_ev', 'm_cl', 'm_itev', 'm_gc', 'm_cf', 'm_itgc', 'cf_ord', 'cf_serie', 'itgc', 'itgc_sku'];
+SOP.IDS = ['ev_kpi', 'ev_tv', 'ev_yoy', 'ev_tv_yoy', 'ev_ped', 'ev_serie', 'ev_sku', 'ev_kit', 'canais_real', 'canais_plan', 'canais_gc_real', 'canais_gc_plan', 'plano_cat', 'planos_dir','itev_kpi', 'itev_yoy', 'itev_sku', 'itev_kit', 'itev_ped', 'itev_serie', 'cl_serie', 'gc_kpi', 'gc_yoy', 'gce', 'gce_sku', 'gce_kit', 'cl_ped', 'cl_ord', 'm_ev', 'm_cl', 'm_itev', 'm_gc', 'm_cf', 'm_itgc', 'cf_ord', 'cf_serie', 'itgc', 'itgc_sku'];
 SOP.FC = { '0 - 30': '#2f6fd6', '30 - 50': '#2e9a58', '50 - 100': '#c3c7ce', 'Acima de 100': '#4d535e', 'Outros': '#e0b22d' };
 /* Plano de Vendas M-1 de cada mês: achado nas pastas do Drive (planos_dir); esta lista só vale enquanto a busca não volta. */
 SOP.PLANOS = { '2026-10': '1JcYd-hi0CbZjB3BntL8n-VPH1ZVQZEtn4Prc50XB5cA', '2026-11': '1Gq9dh7KfKH2OXOH3wtwjsbD66J0n_In4BAYtv6nD2nM' };
@@ -406,26 +406,6 @@ dash.draw('linhas', (el) => {
   const tip = SOP.tip(el);
   svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.t)).attr('width', x.bandwidth()).attr('y', m.t).attr('height', H - m.b - m.t).style('fill', 'transparent')
     .on('mousemove', (ev, r) => tip(ev, (gran === 'hora' ? lab(r.t) : gran === 'dia' ? SOP.d(r.t) : lab(r.t)) + ' · CM2 ' + SOP.F(r.cm2_pct, 'pct') + ' · pós-comissão ' + SOP.F(r.cm2pos_pct, 'pct') + ' · PMV ' + SOP.F(r.pmv, 'brl2'))).on('mouseleave', () => tip(null));
-});
-
-/* destaque no topo: até quando os pedidos estão na base */
-dash.draw('base', (el) => {
-  const d = dash.data('base_status');
-  el.classList.remove('is-warn');
-  if (d.status !== 'ok' || !d.data.length) { el.textContent = d.status === 'loading' ? 'Base de pedidos: verificando a última carga…' : 'Base de pedidos: sem dado da última carga.'; return; }
-  const brt = (iso) => { const x = new Date(iso); if (isNaN(x)) return null; const p = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(x).replace(' ', 'T'); return p; };
-  const fmt = (p) => p.slice(8, 10) + '/' + p.slice(5, 7) + ' às ' + p.slice(11, 13) + 'h' + p.slice(14, 16);
-  const xs = d.data.map((r) => ({ base: r.base, p: brt(r.ate) })).filter((r) => r.p).sort((a, b) => a.base.localeCompare(b.base));
-  if (!xs.length) { el.textContent = 'Base de pedidos: sem dado da última carga.'; return; }
-  const min = xs.reduce((m, r) => (r.p < m ? r.p : m), xs[0].p);
-  const same = xs.every((r) => r.p.slice(0, 13) === xs[0].p.slice(0, 13));
-  const txt = same ? 'Base de pedidos atualizada até ' + fmt(min) : 'Base de pedidos atualizada até ' + xs.map((r) => r.base + ' ' + fmt(r.p)).join(' · ');
-  const fim = String(dash.params().fim || '');
-  const incompleto = fim && min < fim + 'T23:59';
-  el.replaceChildren();
-  const b = document.createElement('strong'); b.textContent = txt; el.append(b);
-  if (incompleto) { el.classList.add('is-warn'); const s = document.createElement('span'); s.textContent = ' · o período ainda não está completo: vendas depois desse horário entram na próxima carga (de hora em hora, das 8h às 20h).'; el.append(s); }
-  else { const s = document.createElement('span'); s.textContent = ' · cargas de hora em hora, das 8h às 20h.'; el.append(s); }
 });
 
 })();
