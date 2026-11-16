@@ -1,0 +1,501 @@
+<style>
+.sop { --ev: #e0182d; --gc: #8e2448; --brand: var(--color-fg); font-family: var(--font-anthropic-sans); color: var(--color-fg); display: flex; flex-direction: column; gap: 28px; padding-block: 4px 40px; }
+.sop-ev { --brand: var(--ev); }
+.sop-gc { --brand: var(--gc); }
+.sop h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 32px; line-height: 1.1; margin: 0; text-wrap: balance; }
+.sop h2 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 24px; margin: 0; }
+.sop h3 { font-size: var(--cds-font-size-body, 14px); font-weight: var(--cds-font-weight-medium, 500); margin: 0; }
+.sop-muted, .sop-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption, 12px); line-height: 1.5; margin: 0; }
+.sop-head { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 14px; border: 1px solid var(--color-border-line); background: linear-gradient(110deg, color-mix(in srgb, var(--ev) 12%, transparent), transparent 45%, color-mix(in srgb, var(--gc) 14%, transparent)); }
+.sop-brands { display: flex; gap: 6px; }
+.sop-sub { margin: 0; color: var(--color-fg-muted); max-width: 76ch; line-height: 1.5; }
+.sop-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.sop-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 3px; gap: 2px; background: var(--color-panel); }
+.sop-seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--color-fg-muted); padding: 6px 16px; border-radius: 999px; cursor: pointer; }
+.sop-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
+.sop-btn { font: inherit; font-size: 13px; border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.sop-btn:hover, .sop-seg button:hover { filter: brightness(0.95); }
+.sop button:focus-visible, .sop a:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.sop-base { margin: 10px 0 4px; padding: 10px 14px; border-radius: 10px; border-left: 4px solid var(--color-ok); background: color-mix(in srgb, var(--color-ok) 10%, transparent); font-size: 14px; color: var(--color-fg); }
+.sop-base strong { font-weight: 700; }
+.sop-base.is-warn { border-left-color: #d98a00; background: color-mix(in srgb, #d98a00 14%, transparent); }
+.sop-upd, .sop-per { font-size: 13px; color: var(--color-fg-muted); margin: 0; }
+.sop-upd b, .sop-per b { color: var(--color-fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.sop-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+.sop-nav a { font-size: 12px; color: var(--color-fg); text-decoration: none; border: 1px solid var(--color-border-line); border-left: 3px solid var(--brand); border-radius: 6px; padding: 4px 10px; background: var(--color-panel); }
+.sop-nav a:hover { background: color-mix(in srgb, var(--brand) 10%, var(--color-panel)); }
+.sop-pill { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--brand); border-radius: 4px; padding: 3px 7px; }
+.sop-sec { display: flex; flex-direction: column; gap: 16px; padding: 18px; border-radius: 14px; border: 1px solid var(--color-border-line); border-top: 4px solid var(--brand); background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 5%, transparent), transparent 140px); scroll-margin-top: 12px; }
+.sop-sec-h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.sop-sec-h .sop-note { flex-basis: 100%; }
+.sop-tag { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-muted); }
+.sop-grp { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.sop-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-top: 4px solid var(--brand); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.sop-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 34px; line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--brand); }
+.sop-card.is-total .sop-big { color: var(--color-fg); }
+.sop-pairs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.sop-pairs div, .sop-kpi { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.sop-lbl { font-size: 11px; color: var(--color-fg-muted); letter-spacing: .02em; }
+.sop-val { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.sop-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 8px; }
+.sop-kpi { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 10px; padding: 10px 12px; }
+.sop-kpi .sop-val { font-size: 18px; }
+.sop-kpi.is-main { background: var(--brand); border-color: var(--brand); grid-column: span 2; }
+.sop-kpi.is-main .sop-lbl { color: #fff; opacity: .85; }
+.sop-kpi.is-main .sop-val { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 30px; color: #fff; }
+.sop-nd { color: var(--color-fg-muted); font-weight: 400; font-size: 13px; }
+.is-ok { color: var(--color-ok); } .is-warn { color: var(--color-warn); } .is-bad { color: var(--color-bad); }
+.sop-meter-row { display: flex; flex-direction: column; gap: 6px; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 10px; padding: 12px 14px; }
+.sop-meter { position: relative; min-height: 44px; }
+.sop-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.sop-block { display: flex; flex-direction: column; gap: 8px; min-width: 0; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 12px; padding: 14px; }
+.sop-chart { position: relative; min-height: 230px; }
+.sop-chart.is-sm { min-height: 180px; }
+.sop-chart svg text, .sop-pir svg text, .sop-meter svg text { fill: var(--cds-text-secondary, var(--color-fg-muted)); font-size: 11px; }
+.sop-pir { position: relative; min-height: 190px; }
+.sop-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover, var(--color-panel)); border: 1px solid var(--cds-border, var(--color-border-line)); box-shadow: var(--cds-shadow-popover, none); border-radius: 8px; padding: 6px 9px; font-size: 12px; white-space: nowrap; z-index: 2; color: var(--color-fg); }
+.sop-tw { overflow-x: auto; }
+.sop table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+.sop th { text-align: right; font-weight: 500; font-size: 11px; color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.sop td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.sop tbody tr:hover td { background: color-mix(in srgb, var(--brand) 6%, transparent); }
+.sop th:first-child, .sop td:first-child { text-align: left; }
+.sop td.sop-name { white-space: normal; min-width: 160px; max-width: 320px; }
+.sop tr.is-total td { font-weight: 600; border-top: 1px solid var(--color-fg-muted); }
+.sop-cellbar { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; width: 100%; }
+.sop-cellbar i { display: inline-block; height: 8px; border-radius: 4px; background: var(--brand); opacity: .85; }
+.sop-cellbar i.is-plan { background: transparent; border: 1px solid var(--color-fg-muted); }
+.sop-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.sop-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--color-fg-muted); }
+.sop-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.sop-leg i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; }
+[data-dash-source-state=refreshing] { opacity: .5; }
+.sop tr.is-grp td { font-weight: 600; background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.sop td.is-sub { padding-left: 24px; }
+.sop .sop-block table.sop-top { font-size: 11.5px; border-collapse: separate; border-spacing: 0; border: 1.5px solid color-mix(in srgb, var(--brand) 45%, transparent); border-radius: 10px; overflow: hidden; }
+.sop .sop-block table.sop-top thead th { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; padding: 8px 8px; white-space: nowrap; color: #fff; font-weight: 600; background: var(--brand); border-bottom: 0; }
+.sop .sop-block table.sop-top tbody td { padding: 7px 8px; border-bottom: 1px dashed color-mix(in srgb, var(--brand) 40%, transparent); vertical-align: middle; }
+.sop .sop-block table.sop-top tbody tr:last-child td { border-bottom: 0; }
+.sop .sop-block table.sop-top tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--brand) 6%, transparent); }
+.sop .sop-block table.sop-top tbody tr:hover td { background: color-mix(in srgb, var(--brand) 14%, transparent); }
+.sop .sop-block table.sop-top tbody td:first-child { border-left: 3px solid var(--brand); }
+.sop .sop-block table.sop-top td.sop-name { font-size: 11.5px; line-height: 1.3; width: 100%; max-width: none; min-width: 0; white-space: normal; }
+.sop .sop-block table.sop-top th:not(:first-child), .sop .sop-block table.sop-top td:not(:first-child) { width: 1%; white-space: nowrap; }
+.sop .sop-block table.sop-top tbody td:nth-child(2) { font-weight: 600; }
+.sop-nm { display: flex; align-items: center; gap: 8px; }
+.sop-nm { min-width: 0; }
+.sop-h4 { font-size: 13px; font-weight: 600; margin: 14px 0 2px; color: var(--color-fg); }
+.sop .sop-block table.sop-cut td.sop-name { max-width: 0; }
+.sop-cut .sop-tx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.sop-rank { display: inline-block; flex: none; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; background-color: var(--brand); color: #fff; font-size: 10px; font-weight: 700; }
+.sop-cm { display: inline-block; min-width: 46px; text-align: center; padding: 2px 6px; border-radius: 999px; font-weight: 600; font-size: 11px; }
+.sop-cm.is-hi { color: var(--color-ok); background: color-mix(in srgb, var(--color-ok) 14%, transparent); }
+.sop-cm.is-lo { color: var(--color-bad); background: color-mix(in srgb, var(--color-bad) 12%, transparent); }
+
+.sop-ch tr.is-total td { border-top: 2px solid var(--color-fg); }
+.sop details { border-top: 1px solid var(--color-border-line); padding-top: 14px; }
+.sop summary { cursor: pointer; font-weight: 500; }
+.sop dl { display: grid; grid-template-columns: minmax(120px, 200px) 1fr; gap: 6px 16px; font-size: 13px; line-height: 1.5; margin: 12px 0 0; }
+.sop dt { color: var(--color-fg-muted); } .sop dd { margin: 0; }
+@media (max-width: 520px) { .sop-pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sop dl { grid-template-columns: 1fr; } .sop-sec, .sop-head { padding: 12px; } .sop-kpi.is-main { grid-column: span 1; } }
+</style>
+
+<div class="sop">
+  <header class="sop-head" id="topo">
+    <div class="sop-brands"><span class="sop-pill sop-ev">Evino</span><span class="sop-pill sop-gc">Grand Cru</span></div>
+    <h1>Super One Page · BU Digital</h1>
+    <p class="sop-sub">Resultado de todas as BUs digitais da Evino e da Grand Cru, uma por vez. Realizado das bases do Magento (Redshift); metas da planilha Diarização BU Digital. Onde a base não tem o dado, aparece "sem dado".</p>
+    <div class="sop-ctl">
+      <div class="sop-seg" role="group" aria-label="Período">
+        <button type="button" data-p="hoje" aria-pressed="false">Hoje</button>
+        <button type="button" data-p="ontem" aria-pressed="false">Ontem</button>
+        <button type="button" data-p="mtd" aria-pressed="false">MTD</button>
+        <button type="button" data-p="lm" aria-pressed="false">Mês passado</button>
+      </div>
+      <button type="button" class="sop-btn" id="sop-refresh">Atualizar</button>
+      <p class="sop-upd">Última atualização: <b data-draw="upd">—</b></p>
+    </div>
+    <p class="sop-base" data-draw="base" data-source="base_status" role="status">Base de pedidos: verificando a última carga…</p>
+    <p class="sop-per">Período: <b data-draw="per" data-source="ev_ped" data-field="fim" data-row="0">—</b>. MTD vai até ontem (D-1); Mês passado é o mês anterior fechado. O ano contra ano compara só a receita, nas mesmas datas do ano anterior.</p>
+    <nav class="sop-nav" aria-label="Seções">
+      <a href="#grupo">Grupo</a><a class="sop-ev" href="#ecom-evino">E-commerce Evino</a><a class="sop-ev" href="#clube">Clube Evino</a><a class="sop-ev" href="#itau-evino">Itaú Shop Evino</a><a class="sop-gc" href="#ecom-gc">E-commerce Grand Cru</a><a class="sop-gc" href="#confraria">Confraria</a><a class="sop-gc" href="#itau-gc">Itaú Shop Grand Cru</a>
+    </nav>
+  </header>
+
+  <!-- 1 · GRUPO -->
+  <section class="sop-sec" id="grupo">
+    <div class="sop-sec-h"><span class="sop-tag">Seção 1</span><h2>Visão consolidada do grupo</h2></div>
+    <div class="sop-grp">
+      <div class="sop-card sop-ev">
+        <h3>Marca Evino</h3><p class="sop-note">E-commerce Evino + Clube Evino + Itaú Shop Evino</p>
+        <div class="sop-big" data-draw="v" data-source="grupo" data-where="marca=Evino" data-field="rec" data-fmt="brlc" data-fetchpriority="high">—</div>
+        <div class="sop-pairs">
+          <div><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Evino" data-field="meta" data-fmt="brlc">—</span></div>
+          <div><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Evino" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+          <div><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Evino" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+        </div>
+        <div class="sop-meter" data-draw="meter" data-source="grupo" data-where="marca=Evino" data-field="ating" role="img" aria-label="Atingimento da meta de receita"></div>
+      </div>
+      <div class="sop-card sop-gc">
+        <h3>Marca Grand Cru</h3><p class="sop-note">E-commerce Grand Cru + Confraria + Itaú Shop Grand Cru</p>
+        <div class="sop-big" data-draw="v" data-source="grupo" data-where="marca=Grand%20Cru" data-field="rec" data-fmt="brlc">—</div>
+        <div class="sop-pairs">
+          <div><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grand%20Cru" data-field="meta" data-fmt="brlc">—</span></div>
+          <div><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grand%20Cru" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+          <div><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grand%20Cru" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+        </div>
+        <div class="sop-meter" data-draw="meter" data-source="grupo" data-where="marca=Grand%20Cru" data-field="ating" role="img" aria-label="Atingimento da meta de receita"></div>
+      </div>
+      <div class="sop-card is-total">
+        <h3>Total do grupo</h3><p class="sop-note">As seis BUs digitais</p>
+        <div class="sop-big" data-draw="v" data-source="grupo" data-where="marca=Grupo" data-field="rec" data-fmt="brlc">—</div>
+        <div class="sop-pairs">
+          <div><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grupo" data-field="meta" data-fmt="brlc">—</span></div>
+          <div><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grupo" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+          <div><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="grupo" data-where="marca=Grupo" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+        </div>
+        <div class="sop-meter" data-draw="meter" data-source="grupo" data-where="marca=Grupo" data-field="ating" role="img" aria-label="Atingimento da meta de receita"></div>
+      </div>
+    </div>
+    <div class="sop-2">
+      <div class="sop-block">
+        <h3>Receita de cada BU contra a meta</h3>
+        <p class="sop-note">Barra = receita do período; traço = meta. Em Hoje, nos e-commerces Evino e Grand Cru a meta vai só até a hora atual (meta do dia distribuída pela curva por hora das 6 semanas anteriores, somada até agora); nos demais canais é a meta do dia inteiro. Vermelho Evino, bordô Grand Cru.</p>
+        <div class="sop-chart is-sm" data-draw="bus" data-source="k_ev k_gc" role="img" aria-label="Receita de cada BU contra a meta"></div>
+      </div>
+      <div class="sop-block">
+        <h3>Participação de cada BU na receita do grupo</h3>
+        <p class="sop-note">Fatia de cada BU na receita total do período.</p>
+        <div class="sop-chart is-sm" data-draw="mix" data-source="k_ev k_gc" role="img" aria-label="Participação de cada BU na receita do grupo"></div>
+      </div>
+    </div>
+    <div class="sop-block">
+      <h3>Receita por dia × meta</h3>
+      <p class="sop-note">Soma das séries de cada BU (a mesma receita e a mesma meta dos capítulos). Hoje e Ontem: hora a hora, sem Clube Evino e Confraria; a meta por hora só soma os e-commerces Evino e Grand Cru (os Itaú Shop entram na receita, mas não têm meta por hora). MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-2">
+        <div><h4 class="sop-h4">Marca Evino</h4>
+        <div class="sop-chart" data-draw="serie" data-source="s_g_ev" role="img" aria-label="Receita da marca Evino no período contra a meta"></div></div>
+        <div><h4 class="sop-h4">Marca Grand Cru</h4>
+        <div class="sop-chart" data-draw="serie" data-source="s_g_gc" role="img" aria-label="Receita da marca Grand Cru no período contra a meta"></div></div>
+      </div>
+      <h4 class="sop-h4">Total do grupo</h4>
+      <div class="sop-chart" data-draw="serie" data-source="s_g_all" role="img" aria-label="Receita do grupo no período contra a meta"></div>
+    </div>
+  </section>
+
+  <!-- 2 · E-COMMERCE EVINO -->
+  <section class="sop-sec sop-ev" id="ecom-evino">
+    <div class="sop-sec-h"><span class="sop-pill">Evino</span><span class="sop-tag">Seção 2</span><h2>E-commerce Evino</h2><p class="sop-note">Pedidos BR2…, sem SAC, Vivino e televendas. Hoje: boleto condition (pedidos solid; boleto não pago a 65% e PIX não pago a 75%). Ontem, MTD e YTD: pedidos pagos.</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="rec" data-fmt="brlc" data-fetchpriority="high">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Ticket médio</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="ticket" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Volume (garrafas)</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="vol" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Preço médio</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="pm" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">CM2</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="cm2_pct" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">COGS médio</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="cogs_med" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Markup</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="markup" data-fmt="x">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">COGS / receita</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="cogs_pct" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Desconto médio</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=ev" data-field="desc_pct" data-fmt="pct">—</span></div>
+    </div>
+    <div class="sop-2">
+      <div class="sop-block">
+      <h3>Receita por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora; a meta da hora é a meta do dia distribuída pela curva média por hora dos mesmos dias da semana nas 6 semanas anteriores. MTD e Mês passado: dia a dia.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_ev" role="img" aria-label="Receita do e-commerce Evino no período contra a meta"></div>
+    </div>
+      <div class="sop-block">
+        <h3>Receita acumulada contra a meta acumulada</h3>
+        <p class="sop-note">Linha cheia = realizado acumulado; tracejada = meta acumulada no mesmo ponto.</p>
+        <div class="sop-chart" data-draw="acum" data-source="s_ev" role="img" aria-label="Receita acumulada do e-commerce Evino contra a meta acumulada"></div>
+      </div>
+    </div>
+    <div class="sop-block">
+      <h3>Pirâmide de produtos: share de receita por faixa</h3>
+      <p class="sop-note">Faixa de preço cadastrada em vw_ev_grupo_de_produto. Plano = Plano de Vendas do mês do período; sem dado quando a planilha daquele mês não está mapeada.</p>
+      <div class="sop-leg"><span><i style="background:#2f6fd6"></i>0 - 30</span><span><i style="background:#2e9a58"></i>30 - 50</span><span><i style="background:#c3c7ce"></i>50 - 100</span><span><i style="background:#4d535e"></i>Acima de 100</span><span><i style="background:#e0b22d"></i>Outros</span></div>
+      <div class="sop-pir" data-draw="share" data-source="pir_ev" role="img" aria-label="Share de receita por faixa de preço, plano contra realizado"></div>
+    </div>
+    <div class="sop-block">
+      <h3>Monitoramento de canais</h3>
+      <p class="sop-note">Receita last click (R$ LC) do período: planilha Monitoramento de Canais, aba Receita | Real, contra a meta last click da aba Receita | Plan da mesma planilha. Hoje costuma vir vazio até a planilha ser preenchida.</p>
+      <div class="sop-tw"><table class="sop-ch" data-source="canais_ev" data-row-key="canal">
+        <thead><tr><th data-field="canal">Canal</th><th data-field="real">R$ LC | Real</th><th data-field="meta">R$ LC | Meta</th><th data-field="ating">R$ LC | ATG</th><th data-field="gap">Gap</th></tr></thead>
+        <tbody data-draw="tb" data-cols="canal:t,real:brl,meta:brl,ating:pct,gap:gap"></tbody>
+      </table></div>
+    </div>
+    <div class="sop-2">
+      <div class="sop-block"><h3>Top 12 kits por receita</h3>
+        <p class="sop-note">CM2 em vermelho abaixo de 15%; em verde a partir de 15%.</p>
+        <div class="sop-tw"><table class="sop-top" data-source="ev_kit" data-row-key="kit">
+          <thead><tr><th data-field="nome">Kit</th><th data-field="rec">R$ mil</th><th data-field="qtd">Garrafas</th><th data-field="cm2_pct">CM2</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,qtd:int,cm2_pct:pct"></tbody>
+        </table></div></div>
+      <div class="sop-block"><h3>Top 12 SKUs por receita</h3>
+        <p class="sop-note">CM2 em vermelho abaixo de 15%; em verde a partir de 15%.</p>
+        <div class="sop-tw"><table class="sop-top" data-source="ev_sku" data-row-key="sku">
+          <thead><tr><th data-field="nome">Produto</th><th data-field="rec">R$ mil</th><th data-field="garrafas">Garrafas</th><th data-field="cm2_pct">CM2</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,garrafas:int,cm2_pct:pct" data-top="12"></tbody>
+        </table></div></div>
+    </div>
+  </section>
+
+  <!-- 3 · CLUBE EVINO -->
+  <section class="sop-sec sop-ev" id="clube">
+    <div class="sop-sec-h"><span class="sop-pill">Evino</span><span class="sop-tag">Seção 3</span><h2>Clube Evino</h2><p class="sop-note">Loja Clube Evino (pedidos 4000…), itens pagos, sem a compra da assinatura (pedidos com status signature_created)</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="rec" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta de pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cl" data-field="meta_pedidos" data-fmt="int">—</span></div>
+    </div>
+    <div class="sop-block">
+      <h3>Receita por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora, sem meta por hora (só os e-commerces Evino e Grand Cru têm meta hora a hora). MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior. Sem a compra da assinatura, como a receita acima.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_cl" role="img" aria-label="Receita do Clube Evino no período contra a meta"></div>
+    </div>
+    <div class="sop-block">
+      <h3>Base por plano</h3>
+      <p class="sop-note">Caixas e demais pedidos, sem a compra da assinatura. Ticket médio = receita ÷ pedidos; PMV = receita ÷ garrafas. As caixas já são cobranças mensais, então não há divisão por 12 aqui.</p>
+      <div class="sop-tw"><table class="sop-top" data-source="cl_tab" data-row-key="tipo,plano">
+        <thead><tr><th data-field="plano">Plano</th><th data-field="rec">Receita</th><th data-field="meta">Meta</th><th data-field="ating">Ating.</th><th data-field="pedidos">Pedidos</th><th data-field="meta_pedidos">Meta ped.</th><th data-field="ating_pedidos">Ating. ped.</th><th data-field="ticket">Ticket médio</th><th data-field="pmv">PMV</th></tr></thead>
+        <tbody data-draw="tb" data-filter="tipo=base" data-cols="plano:t,rec:brl,meta:brl,ating:pct,pedidos:int,meta_pedidos:int,ating_pedidos:apct,ticket:brl2,pmv:brl2"></tbody>
+      </table></div>
+    </div>
+    <div class="sop-block">
+        <h3>Novos por plano</h3>
+        <p class="sop-note">Novas assinaturas (compras da assinatura, status signature_created), período a período.</p>
+        <div class="sop-chart" data-draw="stack" data-source="cl_ord" data-field="pedidos" data-filter="tipo=novo" role="img" aria-label="Novas assinaturas do Clube Evino por plano, período a período"></div>
+      </div>
+    <div class="sop-block">
+      <h3>Novos por plano</h3>
+      <p class="sop-note">Compra da assinatura no período (pedidos com status signature_created). Meta = novas assinaturas da planilha; a planilha não tem meta de receita de novos. Receita = valor pago; ticket médio e PMV em valor mensal (anual ÷ 12, semestral ÷ 6).</p>
+      <div class="sop-tw"><table class="sop-top" data-source="cl_tab" data-row-key="tipo,plano">
+        <thead><tr><th data-field="plano">Plano</th><th data-field="pedidos">Novos</th><th data-field="meta_pedidos">Meta</th><th data-field="ating_pedidos">Ating.</th><th data-field="rec">Receita</th><th data-field="ticket">Ticket médio</th><th data-field="pmv">PMV</th></tr></thead>
+        <tbody data-draw="tb" data-filter="tipo=novo" data-cols="plano:t,pedidos:int,meta_pedidos:int,ating_pedidos:apct,rec:brl,ticket:brl2,pmv:brl2"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 4 · ITAÚ SHOP EVINO -->
+  <section class="sop-sec sop-ev" id="itau-evino">
+    <div class="sop-sec-h"><span class="sop-pill">Evino</span><span class="sop-tag">Seção 4</span><h2>Itaú Shop Evino</h2><p class="sop-note">Pedidos BRI…, sem new, payment_review e canceled; todos contam como pagos. Não tem meta hora a hora nem canais.</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="rec" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">CM2</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="cm2_pct" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">CM2 do plano</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="cm2_plan" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">CM2 pós-comissão</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="cm2pos_pct" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">CM2 pós-comissão do plano</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="cm2pos_plan" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Volume (itens)</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="vol" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">PMV</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="pm" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Ticket médio</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="ticket" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Volume avulso</span><span class="sop-val" data-draw="v" data-source="k_ev" data-where="bu=itev" data-field="single_pct" data-fmt="pct">—</span></div>
+    </div>
+    <p class="sop-note">CM2 % = CM2 ÷ receita com frete. CM2 pós-comissão = CM2 − 10 p.p., a comissão de 10% paga ao Itaú. Volume = todos os itens; PMV = receita ÷ itens; ticket médio = receita ÷ pedidos; volume avulso = itens vendidos fora de kit ÷ itens.</p>
+    <div class="sop-block">
+      <h3>Receita por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora, sem meta por hora (só os e-commerces Evino e Grand Cru têm meta hora a hora). MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_itev" role="img" aria-label="Receita do Itaú Shop Evino no período contra a meta"></div>
+    </div>
+    <div class="sop-block">
+      <h3>CM2, CM2 pós-comissão e PMV</h3>
+      <p class="sop-note">CM2 e CM2 pós-comissão no eixo da esquerda; PMV em reais no eixo da direita.</p>
+      <div class="sop-leg"><span><i style="background:var(--ev);height:3px"></i>CM2</span><span><i style="background:repeating-linear-gradient(90deg,var(--ev) 0 4px,transparent 4px 7px);height:3px"></i>CM2 pós-comissão</span><span><i style="background:var(--color-fg-muted);height:3px"></i>PMV</span></div>
+      <div class="sop-chart is-sm" data-draw="linhas" data-source="s_itev" role="img" aria-label="CM2, CM2 pós-comissão e PMV do Itaú Shop Evino no período"></div>
+    </div>
+    <div class="sop-2">
+      <div class="sop-block"><h3>Top 12 kits por receita</h3>
+        <p class="sop-note">Receita com frete. Itens = garrafas e demais itens do kit; kits = itens ÷ itens por kit; PMV = receita ÷ itens. CM2 pós-comissão em vermelho abaixo de 5% (= CM2 de 15%).</p>
+        <div class="sop-tw"><table class="sop-top sop-cut" data-source="itev_kit" data-row-key="kit">
+          <thead><tr><th data-field="nome">Kit</th><th data-field="rec">R$ mil</th><th data-field="qtd">Itens</th><th data-field="kits">Kits</th><th data-field="pmv">PMV</th><th data-field="cm2pos_pct">CM2 pós</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,qtd:int,kits:int,pmv:brl2,cm2pos_pct:pct"></tbody>
+        </table></div></div>
+      <div class="sop-block"><h3>Top 12 SKUs por receita</h3>
+        <p class="sop-note">Kit + avulso. Receita com frete; % avulso = itens do SKU vendidos fora de kit. CM2 pós-comissão em vermelho abaixo de 5% (= CM2 de 15%).</p>
+        <div class="sop-tw"><table class="sop-top sop-cut" data-source="itev_sku" data-row-key="sku">
+          <thead><tr><th data-field="nome">Produto</th><th data-field="rec">R$ mil</th><th data-field="frete">Frete mil</th><th data-field="qtd">Itens</th><th data-field="single_pct">% avulso</th><th data-field="cm2pos_pct">CM2 pós</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,frete:k,qtd:int,single_pct:pct,cm2pos_pct:pct"></tbody>
+        </table></div></div>
+    </div>
+  </section>
+
+  <!-- 5 · E-COMMERCE GRAND CRU -->
+  <section class="sop-sec sop-gc" id="ecom-gc">
+    <div class="sop-sec-h"><span class="sop-pill">Grand Cru</span><span class="sop-tag">Seção 5</span><h2>E-commerce Grand Cru</h2><p class="sop-note">Pedidos pagos do Ecomm GC mais o Concierge (Shipping from CD, sellers 9980081926 e 9980089565). Receita total = receita faturada no Magento + R$ 200 por pedido com cupom Itaú (a parte do cupom de R$ 400 paga pelo Itaú).</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita total</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="rec" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Receita faturada</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="rec_fat" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Parte do Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="itau_parte" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Sem cupom Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="sem" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Com cupom Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="com" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Peso do cupom Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="peso" data-fmt="pct">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="ped_itau" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Ticket médio</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="ticket" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Volume (garrafas)</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="vol" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Preço médio</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="pm" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Desconto médio</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=gc" data-field="desc_pct" data-fmt="pct">—</span></div>
+    </div>
+    <p class="sop-note">Com cupom Itaú = o que o cliente pagou nesses pedidos + a parte do Itaú; sem cupom Itaú = todos os demais pedidos, com ou sem outro cupom. Peso = com cupom Itaú ÷ receita total. Ticket médio e preço médio sobre a receita total. A base do Magento Grand Cru não tem custo nem margem por item, então não há CM2, COGS nem markup.</p>
+    <div class="sop-2">
+      <div class="sop-block">
+      <h3>Receita total por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora, com a meta do dia distribuída pela curva média por hora dos mesmos dias da semana nas 6 semanas anteriores. MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior pela mesma regra.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_gc" role="img" aria-label="Receita total do e-commerce Grand Cru no período contra a meta"></div>
+    </div>
+      <div class="sop-block">
+        <h3>Receita acumulada contra a meta acumulada</h3>
+        <p class="sop-note">Linha cheia = realizado acumulado; tracejada = meta acumulada no mesmo ponto.</p>
+        <div class="sop-chart" data-draw="acum" data-source="s_gc" role="img" aria-label="Receita acumulada do e-commerce Grand Cru contra a meta acumulada"></div>
+      </div>
+    </div>
+    <div class="sop-block">
+      <h3>Monitoramento de canais</h3>
+      <p class="sop-note">Receita last click (R$ LC) do período por canal, planilha Grand Cru | Monitoramento de Canais, aba Receita | Real. Abaixo do total last click está o que não entra nele, até chegar à receita total do topo: Concierge (vendido pelos sellers, sem visita atribuída), a parte do Itaú no cupom de R$ 400 (não é paga pelo cliente, então não tem canal) e a UTM sourcing não localizada, que é o resto da conta e pode sair negativa quando a planilha conta algo que o Magento pago não conta. Share = receita da linha ÷ receita total. Hoje costuma vir vazio até a planilha ser preenchida.</p>
+      <div class="sop-tw"><table class="sop-ch" data-source="canais_gc" data-row-key="canal">
+        <thead><tr><th data-field="canal">Canal</th><th data-field="real">Receita</th><th data-field="share">Share</th></tr></thead>
+        <tbody data-draw="tb" data-cols="canal:t,real:brl,share:pct"></tbody>
+      </table></div>
+    </div>
+    <p class="sop-note">O Grand Cru não tem pirâmide de produtos nas bases, por isso esta seção não traz esse bloco.</p>
+    <div class="sop-2">
+      <div class="sop-block"><h3>Top 12 kits por receita</h3>
+        <p class="sop-note">Receita faturada (sem a parte do Itaú), Ecomm GC + Concierge.</p>
+        <div class="sop-tw"><table class="sop-top" data-source="gce_kit" data-row-key="sku">
+          <thead><tr><th data-field="nome">Kit</th><th data-field="rec">R$ mil</th><th data-field="qtd">Itens</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,qtd:int"></tbody>
+        </table></div></div>
+      <div class="sop-block"><h3>Top 12 SKUs por receita</h3>
+        <p class="sop-note">Receita faturada (sem a parte do Itaú), Ecomm GC + Concierge. Estoque = quantidade vendável do e-commerce agora (estoque menos reservas, foto do dia de vw_gc_dim_stock); pode sair negativo quando a reserva passa do físico.</p>
+        <div class="sop-tw"><table class="sop-top" data-source="gce_sku" data-row-key="sku">
+          <thead><tr><th data-field="nome">Produto</th><th data-field="rec">R$ mil</th><th data-field="qtd">Itens</th><th data-field="estoque">Estoque</th></tr></thead>
+          <tbody data-draw="tb" data-cols="nome:name,rec:k,qtd:int,estoque:int"></tbody>
+        </table></div></div>
+    </div>
+  </section>
+
+  <!-- 6 · CONFRARIA -->
+  <section class="sop-sec sop-gc" id="confraria">
+    <div class="sop-sec-h"><span class="sop-pill">Grand Cru</span><span class="sop-tag">Seção 6</span><h2>Confraria</h2><p class="sop-note">Loja Confraria, itens pagos, só assinatura de vinho (master SKU con-…, sem os planos de crédito Grand 200, 250 e 500) e sem a compra da assinatura (pedidos com status signature_created). Planos: Reserva soma em Reserva + e Experiência + em Experiência.</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="rec" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta de pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=cf" data-field="meta_pedidos" data-fmt="int">—</span></div>
+    </div>
+    <div class="sop-block">
+      <h3>Receita por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora, sem meta por hora (só os e-commerces Evino e Grand Cru têm meta hora a hora). MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior. Sem a compra da assinatura, como a receita acima.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_cf" role="img" aria-label="Receita da Confraria no período contra a meta"></div>
+    </div>
+    <div class="sop-block">
+      <h3>Base por plano</h3>
+      <p class="sop-note">Caixas e demais pedidos, sem a compra da assinatura. Ticket médio = receita ÷ pedidos; PMV = receita ÷ garrafas. As caixas já são cobranças mensais, então não há divisão por 12 aqui. Metas da planilha por plano: receita de vinho e assinaturas ativas (meta de pedidos); Reserva + inclui a meta do Reserva e Experiência a do Experiência +.</p>
+      <div class="sop-tw"><table class="sop-top" data-source="cf_tab" data-row-key="tipo,plano">
+        <thead><tr><th data-field="plano">Plano</th><th data-field="rec">Receita</th><th data-field="meta">Meta</th><th data-field="ating">Ating.</th><th data-field="pedidos">Pedidos</th><th data-field="meta_pedidos">Meta ped.</th><th data-field="ating_pedidos">Ating. ped.</th><th data-field="ticket">Ticket médio</th><th data-field="pmv">PMV</th></tr></thead>
+        <tbody data-draw="tb" data-filter="tipo=base" data-cols="plano:t,rec:brl,meta:brl,ating:pct,pedidos:int,meta_pedidos:int,ating_pedidos:apct,ticket:brl2,pmv:brl2"></tbody>
+      </table></div>
+    </div>
+    <div class="sop-block">
+        <h3>Novos por plano</h3>
+        <p class="sop-note">Novas assinaturas (compras da assinatura, status signature_created), período a período.</p>
+        <div class="sop-chart" data-draw="stack" data-source="cf_ord" data-field="pedidos" data-filter="tipo=novo" role="img" aria-label="Novas assinaturas da Confraria por plano, período a período"></div>
+      </div>
+    <div class="sop-block">
+      <h3>Novos por plano</h3>
+      <p class="sop-note">Compra da assinatura no período (pedidos com status signature_created). Meta = novas assinaturas da planilha por plano. Receita paga = valor cobrado na compra; receita mensal = valor pago em valor de um mês (anual ÷ 12, semestral ÷ 6), comparada à meta de receita de novos da planilha, que é mensal. Ticket médio e PMV também em valor mensal.</p>
+      <div class="sop-tw"><table class="sop-top" data-source="cf_tab" data-row-key="tipo,plano">
+        <thead><tr><th data-field="plano">Plano</th><th data-field="pedidos">Novos</th><th data-field="meta_pedidos">Meta</th><th data-field="ating_pedidos">Ating.</th><th data-field="rec">Receita paga</th><th data-field="rec_mes">Receita mensal</th><th data-field="meta_rec_mes">Meta rec. mensal</th><th data-field="ating_rec_mes">Ating. rec.</th><th data-field="ticket">Ticket médio</th><th data-field="pmv">PMV</th></tr></thead>
+        <tbody data-draw="tb" data-filter="tipo=novo" data-cols="plano:t,pedidos:int,meta_pedidos:int,ating_pedidos:apct,rec:brl,rec_mes:brl,meta_rec_mes:brl,ating_rec_mes:apct,ticket:brl2,pmv:brl2"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 7 · ITAÚ SHOP GRAND CRU -->
+  <section class="sop-sec sop-gc" id="itau-gc">
+    <div class="sop-sec-h"><span class="sop-pill">Grand Cru</span><span class="sop-tag">Seção 7</span><h2>Itaú Shop Grand Cru</h2><p class="sop-note">Pedidos pagos da loja Grand Cru com pagamento Itaú Shop (itau_payment). Receita total = receita faturada (produtos + frete + crédito de loja) + reembolso do Itaú nos cupons: R$ 38,50 por pedido com cupom de R$ 70 e R$ 13,50 por pedido com cupom de R$ 45. O cupom sai do desconto do pedido, porque o campo de cupom vem vazio.</p></div>
+    <div class="sop-kpis">
+      <div class="sop-kpi is-main"><span class="sop-lbl">Receita total</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="rec" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="meta" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Atingimento</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="ating" data-fmt="pct" data-tone="ating">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">YoY receita</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="yoy" data-fmt="delta" data-tone="delta">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Receita faturada</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="rec_fat" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Reembolso Itaú</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="reemb" data-fmt="brlc">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Meta de pedidos</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="meta_pedidos" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Ticket médio</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="ticket" data-fmt="brl2">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Volume (garrafas)</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="vol" data-fmt="int">—</span></div>
+      <div class="sop-kpi"><span class="sop-lbl">Preço médio</span><span class="sop-val" data-draw="v" data-source="k_gc" data-where="bu=itgc" data-field="pm" data-fmt="brl2">—</span></div>
+    </div>
+    <p class="sop-note">Ticket médio e preço médio sobre a receita total. A base do Magento Grand Cru não tem custo por item, então não há CM2.</p>
+    <div class="sop-block">
+      <h3>Resumo de receita</h3>
+      <p class="sop-note">Pedidos com cupom de R$ 70, de R$ 45 e sem cupom. Receita pedidos = o que o cliente pagou; receita total = receita pedidos + reembolso do Itaú.</p>
+      <div class="sop-tw"><table class="sop-top" data-source="itgc_res" data-row-key="t">
+        <thead><tr><th data-field="grupo">Grupo</th><th data-field="sub">Detalhe</th><th data-field="pedidos">Pedidos</th><th data-field="rec_fat">Receita pedidos</th><th data-field="reemb">Reembolso Itaú</th><th data-field="rec">Receita total</th><th data-field="share">% do canal</th></tr></thead>
+        <tbody data-draw="tb" data-cols="grupo:t,sub:t,pedidos:int,rec_fat:brl,reemb:brl,rec:brl,share:pct"></tbody>
+      </table></div>
+    </div>
+    <div class="sop-block"><h3>Top 12 SKUs por receita</h3>
+      <p class="sop-note">Receita = valor pago + frete, sem o reembolso do Itaú (que é por pedido). Volume = garrafas; PMV = receita ÷ garrafas. Desconto total = preço de lista − valor pago, em reais e em % do preço de lista.</p>
+      <div class="sop-tw"><table class="sop-top sop-cut" data-source="itgc_sku" data-row-key="sku">
+        <thead><tr><th data-field="nome">Produto</th><th data-field="rec">R$ mil</th><th data-field="qtd">Garrafas</th><th data-field="pmv">PMV</th><th data-field="desc">Desconto R$ mil</th><th data-field="desc_pct">Desconto %</th></tr></thead>
+        <tbody data-draw="tb" data-cols="nome:name,rec:k,qtd:int,pmv:brl2,desc:k,desc_pct:pct"></tbody>
+      </table></div>
+    </div>
+    <div class="sop-2">
+      <div class="sop-block">
+      <h3>Receita total por dia × meta</h3>
+      <p class="sop-note">Hoje e Ontem: hora a hora, sem meta por hora (só os e-commerces Evino e Grand Cru têm meta hora a hora). MTD e Mês passado: dia a dia, com o mês inteiro de meta e o ano anterior.</p>
+      <div class="sop-leg"><span><i style="background:var(--color-ok)"></i>Bateu a meta</span><span><i style="background:var(--color-bad)"></i>Abaixo da meta</span><span><i style="background:var(--color-fg);height:3px"></i>Meta</span><span><i style="background:var(--brand);opacity:.5;height:2px"></i>Ano anterior</span></div>
+      <div class="sop-chart" data-draw="serie" data-source="s_itgc" role="img" aria-label="Receita total do Itaú Shop Grand Cru no período contra a meta"></div>
+    </div>
+      <div class="sop-block">
+        <h3>Receita acumulada contra a meta acumulada</h3>
+        <p class="sop-note">Linha cheia = realizado acumulado; tracejada = meta acumulada no mesmo ponto.</p>
+        <div class="sop-chart" data-draw="acum" data-source="s_itgc" role="img" aria-label="Receita acumulada do Itaú Shop Grand Cru contra a meta acumulada"></div>
+      </div>
+    </div>
+  </section>
+
+  <details id="definicoes">
+    <summary>Definições e fontes</summary>
+    <dl>
+      <dt>Receita</dt><dd>Bruta com frete: preço pago pelo item (price_to_pay, depois de cupom) + frete do item. No Grand Cru, o crédito de loja fica de fora, porque vem repetido em cada item do pedido.</dd>
+      <dt>Volume</dt><dd>Garrafas: quantidade das linhas de garrafa (is_bottle = 1).</dd>
+      <dt>Preço médio</dt><dd>Receita ÷ volume.</dd>
+      <dt>Ticket médio</dt><dd>Receita ÷ pedidos. Evino: pedidos distintos do e-commerce no Magento, com o mesmo recorte da receita (pagos; em Hoje, boleto e PIX não pagos com fator). Grand Cru: pedidos distintos pagos; numa janela longa a contagem pode ficar sem dado se a base não terminar a tempo.</dd>
+      <dt>CM2</dt><dd>E-commerce Evino: Σ CM2 realizado ÷ Σ price_to_pay (definição da base do Magento Evino). Itaú Shop Evino: Σ CM2 realizado ÷ receita com frete, como no Looker do canal. Só existe na Evino.</dd>
+      <dt>COGS médio, markup e COGS / receita</dt><dd>COGS ÷ volume; receita ÷ COGS; COGS ÷ receita. Só existe na Evino.</dd>
+      <dt>Desconto médio</dt><dd>Σ desconto ÷ Σ valor antes do desconto (row_total na Evino, subtotal no Grand Cru).</dd>
+      <dt>Meta</dt><dd>Soma da meta diária da planilha Diarização BU Digital nas datas do período. Atingimento = receita ÷ meta.</dd>
+      <dt>Períodos</dt><dd>Hoje: o dia até agora. Ontem: o dia anterior inteiro. MTD: do primeiro dia do mês até ontem (D-1), para a meta comparar dias fechados. Mês passado: o mês anterior inteiro.</dd>
+      <dt>Boleto condition</dt><dd>Só no e-commerce Evino em Hoje: entram todos os pedidos solid do dia; os pagos valem 100%, e os ainda não pagos de boleto valem 65% e os de PIX 75% do valor (receita, margem, custo e garrafas). Pedidos (ticket) não têm o fator. Ontem, MTD e YTD usam só pedidos pagos.</dd>
+      <dt>YoY</dt><dd>Receita contra as mesmas datas do ano anterior, mesma base e mesmo recorte.</dd>
+      <dt>Pirâmide Evino</dt><dd>Faixa de preço (categoria) de vw_ev_grupo_de_produto; meta do Plano de Vendas M-1 do mês × participação da meta do período no mês.</dd>
+      <dt>NPS</dt><dd>% promotores − % detratores das respostas do período (vw_sac_nps), pedidos 4000… (Clube) e 3000… (Confraria).</dd>
+      <dt>Meta hora a hora</dt><dd>Meta do dia distribuída pela curva média por hora (participação da receita de cada hora no dia) dos mesmos dias da semana nas 6 semanas anteriores.</dd>
+      <dt>CM2 pós-comissão</dt><dd>CM2 − 10 p.p., a comissão de 10% do Itaú Shop.</dd>
+      <dt>Fora das bases</dt><dd>Custo e margem do Grand Cru, pirâmide e canal do Grand Cru.</dd>
+    </dl>
+  </details>
+</div>

@@ -1,0 +1,1337 @@
+{
+ "base_status": {
+  "title": "Base de pedidos: última carga",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_etl_load_status",
+   "filters": [
+    {
+     "column": "dest_table",
+     "op": "in",
+     "value": "(ev_fact_order_item,gc_fact_order_item)"
+    },
+    {
+     "column": "status",
+     "op": "eq",
+     "value": "OK"
+    }
+   ],
+   "limit": 6,
+   "order": "started_at.desc",
+   "select": [
+    "dest_table",
+    "window_end",
+    "finished_at"
+   ]
+  }
+ },
+ "canais_gc_plan": {
+  "title": "Canais Grand Cru: meta",
+  "tool": "get_values",
+  "args": {
+   "range": "'Receita | Plan'!A368:R732",
+   "spreadsheetId": "1Q15kLEU8dTi8da_kbkijBsZ1eMLjOrJF5rn_m7Emj3c"
+  }
+ },
+ "canais_gc_real": {
+  "title": "Canais Grand Cru: realizado",
+  "tool": "get_values",
+  "args": {
+   "range": "'Receita | Real'!A368:R732",
+   "spreadsheetId": "1Q15kLEU8dTi8da_kbkijBsZ1eMLjOrJF5rn_m7Emj3c"
+  }
+ },
+ "canais_plan": {
+  "title": "Canais Evino: meta",
+  "tool": "get_values",
+  "args": {
+   "range": "'Receita | Plan'!A734:U1100",
+   "spreadsheetId": "1TuXjU0vHez3qgezeV4RRNNJoa9AGKl4_v9xnW0dO7EA"
+  }
+ },
+ "canais_real": {
+  "title": "Canais Evino: receita real",
+  "tool": "get_values",
+  "args": {
+   "range": "'Receita | Real'!A734:U1100",
+   "spreadsheetId": "1TuXjU0vHez3qgezeV4RRNNJoa9AGKl4_v9xnW0dO7EA"
+  }
+ },
+ "cf_ord": {
+  "title": "Confraria: pedidos por plano",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "Confraria"
+    }
+   ],
+   "limit": 1000,
+   "order": "order_increment_id.asc",
+   "select": [
+    "order_increment_id",
+    "assinatura_plano",
+    "assinatura_periodicidade",
+    "status",
+    "is_bottle",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()",
+    "ts:created_at_datetime.min()"
+   ]
+  }
+ },
+ "cf_serie": {
+  "title": "Confraria: receita no tempo",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "status",
+     "op": "neq",
+     "value": "signature_created"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "Confraria"
+    },
+    {
+     "column": "assinatura_master_sku",
+     "op": "like",
+     "value": "con-*"
+    },
+    {
+     "column": "assinatura_plano",
+     "op": "neq",
+     "value": "Grand 200"
+    },
+    {
+     "column": "assinatura_plano",
+     "op": "neq",
+     "value": "Grand 250"
+    },
+    {
+     "column": "assinatura_plano",
+     "op": "neq",
+     "value": "Grand 500"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "cl_ord": {
+  "title": "Clube Evino: pedidos por plano",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "Clube Evino"
+    }
+   ],
+   "limit": 1000,
+   "order": "order_increment_id.asc",
+   "select": [
+    "order_increment_id",
+    "assinatura_plano",
+    "assinatura_periodicidade",
+    "status",
+    "is_bottle",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()",
+    "ts:created_at_datetime.min()"
+   ]
+  }
+ },
+ "cl_ped": {
+  "title": "Clube Evino: pedidos",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "Clube Evino"
+    },
+    {
+     "column": "status",
+     "op": "neq",
+     "value": "signature_created"
+    }
+   ],
+   "limit": 1,
+   "order": "n.desc",
+   "select": [
+    "order_increment_id",
+    "n:sku.count()"
+   ]
+  }
+ },
+ "cl_serie": {
+  "title": "Clube Evino: receita no tempo",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "Clube Evino"
+    },
+    {
+     "column": "status",
+     "op": "neq",
+     "value": "signature_created"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "ev_curva": {
+  "title": "E-commerce Evino: curva por hora",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "ev_kit": {
+  "title": "E-commerce Evino: kits",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    },
+    {
+     "column": "is_bottle",
+     "op": "eq",
+     "value": "1"
+    }
+   ],
+   "limit": 400,
+   "order": "rec.desc",
+   "select": [
+    "fk_bundle_product",
+    "payment_method",
+    "is_paid",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:qty_ordered.sum()",
+    "cm2:cm2_realized.sum()"
+   ]
+  }
+ },
+ "ev_kpi": {
+  "title": "E-commerce Evino: vendas",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "payment_method",
+    "is_paid",
+    "marketplace_provider",
+    "is_bottle",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "cm2:cm2_realized.sum()",
+    "cogs:cogs.sum()",
+    "qtd:qty_ordered.sum()",
+    "desc:discount_amount.sum()",
+    "bruto:row_total.sum()"
+   ]
+  }
+ },
+ "ev_ped": {
+  "title": "E-commerce Evino: pedidos",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1,
+   "order": "n.desc",
+   "select": [
+    "order_increment_id",
+    "n:sku.count()"
+   ]
+  }
+ },
+ "ev_serie": {
+  "title": "E-commerce Evino: receita no tempo",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "ev_sku": {
+  "title": "E-commerce Evino: SKUs",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1000,
+   "order": "sku.asc",
+   "select": [
+    "sku",
+    "is_bottle",
+    "payment_method",
+    "is_paid",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:qty_ordered.sum()",
+    "cm2:cm2_realized.sum()"
+   ]
+  }
+ },
+ "ev_tv": {
+  "title": "E-commerce Evino: televendas",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "{{pago_in}}"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    },
+    {
+     "column": "voucher_code",
+     "op": "ilike",
+     "value": "TV*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "payment_method",
+    "is_paid",
+    "is_bottle",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "cm2:cm2_realized.sum()",
+    "cogs:cogs.sum()",
+    "qtd:qty_ordered.sum()",
+    "desc:discount_amount.sum()",
+    "bruto:row_total.sum()"
+   ]
+  }
+ },
+ "ev_tv_yoy": {
+  "title": "Evino: televendas ano anterior",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini_yoy}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim_yoy}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    },
+    {
+     "column": "voucher_code",
+     "op": "ilike",
+     "value": "TV*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "ev_yoy": {
+  "title": "E-commerce Evino: ano anterior",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini_yoy}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim_yoy}}"
+    },
+    {
+     "column": "is_solid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "is_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BR2*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "payment_method",
+    "marketplace_provider",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "gce": {
+  "title": "E-commerce Grand Cru: pedidos e cupom Itaú",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "business_sales_channel",
+     "op": "eq",
+     "value": "Ecomm GC"
+    }
+   ],
+   "limit": 1000,
+   "order": "order_increment_id.asc",
+   "select": [
+    "order_increment_id",
+    "fk_customer",
+    "coupon_rule_name",
+    "is_bottle",
+    "ts:created_at_datetime.min()",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()",
+    "desc:discount_amount.sum()",
+    "bruto:subtotal.sum()"
+   ]
+  }
+ },
+ "gce_kit": {
+  "title": "E-commerce Grand Cru: kits",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "business_sales_channel",
+     "op": "eq",
+     "value": "Ecomm GC"
+    },
+    {
+     "column": "single_or_kit",
+     "op": "eq",
+     "value": "venda_em_kit"
+    }
+   ],
+   "limit": 1000,
+   "order": "bundle_sku.asc",
+   "select": [
+    "bundle_sku",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()"
+   ]
+  }
+ },
+ "gce_sku": {
+  "title": "E-commerce Grand Cru: SKUs",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "business_sales_channel",
+     "op": "eq",
+     "value": "Ecomm GC"
+    }
+   ],
+   "limit": 1000,
+   "order": "sku.asc",
+   "select": [
+    "sku",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()"
+   ]
+  }
+ },
+ "gc_curva": {
+  "title": "E-commerce Grand Cru: curva por hora",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "business_sales_channel",
+     "op": "eq",
+     "value": "Ecomm GC"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "gc_kpi": {
+  "title": "Lojas Grand Cru: vendas",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "consolidated_store",
+    "sales_channel",
+    "assinatura_plano",
+    "is_bottle",
+    "status",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()",
+    "desc:discount_amount.sum()",
+    "bruto:subtotal.sum()"
+   ]
+  }
+ },
+ "gc_yoy": {
+  "title": "Lojas Grand Cru: ano anterior",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini_yoy}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim_yoy}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "sales_channel",
+    "status",
+    "assinatura_plano",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "itev_kit": {
+  "title": "Itaú Shop Evino: kits",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "new"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "canceled"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "payment_review"
+    }
+   ],
+   "limit": 400,
+   "order": "rec.desc",
+   "select": [
+    "fk_bundle_product",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:qty_ordered.sum()",
+    "cm2:cm2_realized.sum()"
+   ]
+  }
+ },
+ "itev_kpi": {
+  "title": "Itaú Shop Evino: vendas",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "state",
+    "is_bottle",
+    "is_bundle_product",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "cm2:cm2_realized.sum()",
+    "cogs:cogs.sum()",
+    "qtd:qty_ordered.sum()"
+   ]
+  }
+ },
+ "itev_ped": {
+  "title": "Itaú Shop Evino: pedidos",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "new"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "canceled"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "payment_review"
+    }
+   ],
+   "limit": 1,
+   "order": "n.desc",
+   "select": [
+    "order_increment_id",
+    "n:sku.count()"
+   ]
+  }
+ },
+ "itev_serie": {
+  "title": "Itaú Shop Evino: receita no tempo",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "new"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "canceled"
+    },
+    {
+     "column": "state",
+     "op": "neq",
+     "value": "payment_review"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "partition_field",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "cm2:cm2_realized.sum()",
+    "qtd:qty_ordered.sum()"
+   ]
+  }
+ },
+ "itev_sku": {
+  "title": "Itaú Shop Evino: SKUs",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    }
+   ],
+   "limit": 1000,
+   "order": "sku.asc",
+   "select": [
+    "sku",
+    "state",
+    "is_bundle_product",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:qty_ordered.sum()",
+    "cm2:cm2_realized.sum()"
+   ]
+  }
+ },
+ "itev_yoy": {
+  "title": "Itaú Shop Evino: ano anterior",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_ev_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini_yoy}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim_yoy}}"
+    },
+    {
+     "column": "is_paid",
+     "op": "in",
+     "value": "(0,1)"
+    },
+    {
+     "column": "order_increment_id",
+     "op": "like",
+     "value": "BRI*"
+    }
+   ],
+   "limit": 1000,
+   "select": [
+    "state",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()"
+   ]
+  }
+ },
+ "itgc": {
+  "title": "Itaú Shop Grand Cru: pedidos e cupom",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "GrandCru"
+    },
+    {
+     "column": "payment_method",
+     "op": "eq",
+     "value": "itau_payment"
+    }
+   ],
+   "limit": 1000,
+   "order": "order_increment_id.asc",
+   "select": [
+    "order_increment_id",
+    "sku",
+    "fk_customer",
+    "is_bottle",
+    "ts:created_at_datetime.min()",
+    "d:discount_amount.sum()",
+    "q:item_amount.sum()",
+    "p:price_to_pay.sum()",
+    "f:item_shipping_amount.sum()",
+    "sc:total_store_credit.max()"
+   ]
+  }
+ },
+ "itgc_sku": {
+  "title": "Itaú Shop Grand Cru: SKUs",
+  "tool": "query_dataset",
+  "args": {
+   "dataset": "vw_gc_fact_order_item",
+   "filters": [
+    {
+     "column": "created_at_datetime",
+     "op": "gte",
+     "value": "{{ini}}"
+    },
+    {
+     "column": "created_at_datetime",
+     "op": "lte",
+     "value": "{{fim}}"
+    },
+    {
+     "column": "is_flash_paid",
+     "op": "eq",
+     "value": "1"
+    },
+    {
+     "column": "consolidated_store",
+     "op": "eq",
+     "value": "GrandCru"
+    },
+    {
+     "column": "payment_method",
+     "op": "eq",
+     "value": "itau_payment"
+    }
+   ],
+   "limit": 1000,
+   "order": "sku.asc",
+   "select": [
+    "sku",
+    "rec:price_to_pay.sum()",
+    "frete:item_shipping_amount.sum()",
+    "qtd:item_amount.sum()",
+    "lista:original_price.sum()"
+   ]
+  }
+ },
+ "m_cf": {
+  "title": "Metas: Confraria",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_Confraria'!A1:AZ400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "m_cl": {
+  "title": "Metas: Clube Evino",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_clubeEvino'!A1:AF400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "m_ev": {
+  "title": "Metas: e-commerce Evino",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_ecommEvino'!A1:AJ400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "m_gc": {
+  "title": "Metas: e-commerce Grand Cru",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_e-commGC'!A1:AX400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "m_itev": {
+  "title": "Metas: Itaú Shop Evino",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_ItauShopEvino'!A1:Z400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "m_itgc": {
+  "title": "Metas: Itaú Shop Grand Cru",
+  "tool": "get_values",
+  "args": {
+   "range": "'db_forecast_ItauShopGC'!A1:Z400",
+   "spreadsheetId": "1SojMeaWBklR1LSkv_OLIiGynaulQ9ZjfHlculeH94q8"
+  }
+ },
+ "planos_dir": {
+  "title": "Planos de Vendas: arquivos",
+  "tool": "search_files",
+  "args": {
+   "excludeContentSnippets": true,
+   "pageSize": 100,
+   "query": "(parentId = '1Th-FGcCo-o8CHyyy8Ru1xMRGKORvcmme' or parentId = '1SwTpVU2Bp__kgzrAneJWZllLKT4D1zHr') and mimeType = 'application/vnd.google-apps.spreadsheet' and title contains 'Plano de Vendas'"
+  }
+ },
+ "plano_cat": {
+  "title": "Plano de Vendas: faixas",
+  "tool": "get_values",
+  "args": {
+   "range": "'Acompanhamento Categorias'!A5:H400",
+   "spreadsheetId": "{{plano_id}}"
+  }
+ }
+}

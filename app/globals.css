@@ -1,0 +1,47 @@
+/* Tokens que o painel original usa (vinham do tipo Dashboard do claude.ai). */
+:root {
+  --color-bg: #faf9f6;
+  --color-panel: #ffffff;
+  --color-fg: #1f1e1d;
+  --color-fg-muted: #6b6a66;
+  --color-border-line: #e3e1db;
+  --color-ok: #1f8a4c;
+  --color-warn: #c98a12;
+  --color-bad: #c8332b;
+  --cds-chart-grid: #ecebe6;
+  --cds-chart-muted: #c3c7ce;
+  --cds-text-secondary: var(--color-fg-muted);
+  --cds-surface-popover: #ffffff;
+  --cds-border: var(--color-border-line);
+  --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.12);
+  --cds-font-size-body: 14px;
+  --cds-font-size-caption: 12px;
+  --cds-font-weight-medium: 500;
+  --font-anthropic-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-anthropic-serif: Georgia, 'Times New Roman', serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1b1a;
+    --color-panel: #262523;
+    --color-fg: #f2f0eb;
+    --color-fg-muted: #a8a59e;
+    --color-border-line: #3a3936;
+    --color-ok: #3fb26f;
+    --color-warn: #e0a83a;
+    --color-bad: #e5594f;
+    --cds-chart-grid: #34332f;
+    --cds-chart-muted: #5b5f66;
+    --cds-surface-popover: #2d2c29;
+    --cds-shadow-popover: 0 6px 20px rgba(0, 0, 0, 0.5);
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 12px 16px 40px; }
+
+.dash-skeleton { background: linear-gradient(90deg, var(--cds-chart-grid) 0%, transparent 50%, var(--cds-chart-grid) 100%); background-size: 200% 100%; animation: dash-sk 1.4s linear infinite; border-radius: 6px; min-height: 1em; color: transparent !important; }
+@keyframes dash-sk { to { background-position: -200% 0; } }
+svg text { fill: var(--color-fg-muted); font-size: 11px; font-family: var(--font-anthropic-sans); }
+

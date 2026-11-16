@@ -1,0 +1,10 @@
+node_modules
+.next
+.env
+.env*.local
+war-room.env
+*.env
+public/dash/d3.min.js
+.vercel
+next-env.d.ts
+tsconfig.tsbuildinfo
