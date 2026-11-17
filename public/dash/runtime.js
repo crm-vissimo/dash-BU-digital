@@ -6,7 +6,7 @@
  */
 (function () {
   'use strict';
-  var V = '3';
+  var V = '4';
   var S = { datasets: {}, params: { periodo: 'mtd' }, loaders: {}, calcs: {}, draws: {}, listeners: [], state: {}, memo: {}, ver: 0, t0: Date.now() };
   window.__dash = S; // para inspeção no console
 
@@ -37,7 +37,7 @@
     var p = {};
     used(S.datasets[id].args).forEach(function (k) { p[k] = S.params[k]; });
     fetch('/api/dataset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id, params: p, fresh: !!fresh }) })
-      .then(function (r) { return r.json(); })
+      .then(function (r) { if (r.status === 401) { location.href = '/login'; throw new Error('sessão expirada'); } return r.json(); })
       .then(function (j) {
         if (S.state[id].token !== token) return;
         if (!j.ok) throw new Error(j.error || 'erro');

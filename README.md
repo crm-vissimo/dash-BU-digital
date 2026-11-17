@@ -36,7 +36,7 @@ public/dash/runtime.js  (API dash)  ◄───────────┘     
   As chamadas hora a hora ou dia a dia do código original viram uma consulta só (o dia por hora, o mês
   por dia), fatiada no servidor.
 - **Tempos medidos localmente:** sem cache, MTD leva cerca de 9 s e Hoje cerca de 15 s. Com cache, abre em menos de 1 s.
-- **Sem login:** quem tiver o link vê o painel. Para restringir, use a Deployment Protection da Vercel.
+- **Login Google:** só entram contas @vissimo.com.br, @evino.com.br e @grandcru.com.br (NextAuth v5; mude com `ALLOWED_DOMAINS`). Sem sessão, as páginas vão para `/login` e `/api/dataset` responde 401.
 - `REDSHIFT_LOG=1` registra no log o tempo de cada SQL (fila do pool e banco).
 
 ## Rodar local
@@ -51,7 +51,10 @@ npm run dev
 
 1. Suba a pasta para um repositório GitHub e importe na Vercel (framework: Next.js; nada a configurar no build).
 2. Em **Settings → Environment Variables**, cadastre as variáveis de `.env.example`
-   (`REDSHIFT_*`, `GOOGLE_SERVICE_ACCOUNT_JSON`).
+   (`REDSHIFT_*`, `GOOGLE_SERVICE_ACCOUNT_JSON`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`).
+   No cliente OAuth do Google Cloud (Credenciais → ID do cliente OAuth → URIs de redirecionamento autorizados), inclua
+   `https://<seu-app>.vercel.app/api/auth/callback/google` (e `http://localhost:3100/api/auth/callback/google` para rodar local).
+   A tela de consentimento OAuth precisa ser **Externa**, porque Evino e Grand Cru são outros domínios do Google Workspace.
 3. Compartilhe como **Leitor** com a conta de serviço (o `client_email` do JSON) a planilha
    Grand Cru | Monitoramento de Canais (`1Q15kLEU8dTi8da_kbkijBsZ1eMLjOrJF5rn_m7Emj3c`).
    A Diarização BU Digital, a de Canais da Evino e as pastas do Plano de Vendas já funcionam.
